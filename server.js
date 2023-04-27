@@ -13,6 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 require('./controllers/posts')(app);
+require('./controllers/comments.js')(app);
 
 app.get('/', (req, res) => {
     res.render('home');
