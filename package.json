@@ -4,15 +4,20 @@
   "description": "Reddit Tutorial for Server Architecture Course",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --exit"
   },
   "author": "euripidean",
   "license": "ISC",
   "dependencies": {
+    "chai": "^4.3.7",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-handlebars": "^7.0.4",
     "express-validator": "^6.15.0",
     "mongoose": "^7.0.3"
+  },
+  "devDependencies": {
+    "chai-http": "^4.3.0",
+    "mocha": "^10.2.0"
   }
 }
