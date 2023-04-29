@@ -71,6 +71,17 @@ module.exports = (app) => {
             console.log(err.message);
         }
     });
+
+    // SHOW USER
+    app.get('/users/:username', async (req, res) => {
+        try {
+            const user = await User.findOne({ username: req.params.username }).lean().populate('posts').populate('comments');
+            res.render('users-show', { user });
+        }
+        catch (err) {
+            console.log(err.message);
+        }
+    });
     
     
 };

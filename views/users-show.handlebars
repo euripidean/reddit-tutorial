@@ -1,0 +1,31 @@
+<div class="row">
+    <h1>{{user.username}}</h1>
+    <h3>Posts</h3>
+    {{#if user.posts}}
+    {{#each user.posts}}
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">{{this.title}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{this.url}}</h6>
+                <p class="card-text">{{this.summary}}</p>
+                <a href="/posts/{{this.post._id}}" class="card-link">See Post</a>
+            </div>
+        </div>
+    {{/each}}
+    {{else}}
+        <p>No posts yet.</p>
+    {{/if}}
+    <h3>Comments</h3>
+    {{#if user.comments}}
+        {{#each user.comments}}
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <p class="card-text">{{this.content}}</p>
+                    <a href="/posts/{{this.post._id}}" class="card-link">See Post</a>
+                </div>
+            </div>
+        {{/each}}
+    {{else}}
+        <p>No comments yet.</p>
+    {{/if}}
+</div>

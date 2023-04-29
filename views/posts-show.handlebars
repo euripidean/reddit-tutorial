@@ -2,6 +2,7 @@
   <div class="col-sm-6 col-sm-offset-3">
     <a href="{{post.url}}" class="lead">{{post.title}}</a>
     <p>{{post.summary}}</p>
+    <small>Submitted by <a href="/users/{{post.author.username}}">{{post.author.username}}</a></small>
     <form action="/posts/{{post._id}}/comments" method="post">
       <textarea class='form-control' name="content" placeholder="Comment"></textarea>
       <div class="text-right">
@@ -10,6 +11,7 @@
     </form>
     {{#each post.comments}}
       <p>{{this.content}}</p>
+      <small>Submitted by <a href="/users/{{this.author.username}}">{{this.author.username}}</a></small>
     {{/each}}
   </div>
 </div>

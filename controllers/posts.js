@@ -1,4 +1,6 @@
 const Post = require('../models/post');
+const Comment = require('../models/comment');
+const User = require('../models/user');
 
 module.exports = (app) => {
 
@@ -8,7 +10,7 @@ module.exports = (app) => {
     const successMessage = req.flash('successMessage');
     const showMessage = req.query.success;
     try {
-      const posts = await Post.find({}).lean();
+      const posts = await Post.find({}).lean().populate({path: 'author', select: 'username'});
       return res.render('posts-index', { posts, successMessage, showMessage, currentUser });
     } catch (err) {
       console.log(err.message);
@@ -29,9 +31,14 @@ module.exports = (app) => {
     const errorMessage = req.flash('errorMessage', 'You must be logged in to create a post.');
     try {
       if (req.user) {
+        const userId = req.user._id;
         const post = new Post(req.body);
+        post.author = userId;
         await post.save();
-        return res.redirect(`/`, {currentUser: req.user});
+        const user = await User.findById(userId);
+        user.posts.unshift(post);
+        await user.save();
+        return res.redirect(`/posts/${post._id}`);
       } else {
         return res.status(401).render('/posts/new', { errorMessage }); // UNAUTHORIZED
       }
@@ -44,7 +51,7 @@ module.exports = (app) => {
   // SHOW
   app.get('/posts/:id', async (req, res) => {
     try {
-      const post = await Post.findById(req.params.id).lean().populate('comments');
+      const post = await Post.findById(req.params.id).lean().populate('comments').populate('author').populate({path: 'comments', populate: {path: 'author', select: 'username'}});
       return res.render('posts-show', { post, currentUser: req.user });
     } catch (err) {
       console.log(err.message);

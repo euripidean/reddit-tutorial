@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const userSchema = new Schema({
     username: { type: String, required: true },
     password: { type: String, select: false, required: true },
+    posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
