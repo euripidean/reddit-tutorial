@@ -35,4 +35,37 @@ module.exports = (app) => {
         }
     });
 
+    // LOGIN FORM
+    app.get('/login', async (req, res) => {
+        try {
+            res.render('login');
+        } catch {
+            console.log(err.message);
+    }});
+
+    // LOGIN
+    app.post('/login', async (req, res) => {
+        const { username, password } = req.body;
+        try {
+            const user = await User.findOne({ username }, 'username password');
+            if (!user) {
+                return res.status(401).send({ message: 'Wrong Username or Password' });
+            }
+            // Check the password
+            const isMatch = await user.comparePassword(password);
+            if (!isMatch) {
+                return res.status(401).send({ message: 'Wrong Username or Password' });
+            }
+            // Create a token
+            const token = jwt.sign({ _id: user._id, username: user.username }, process.env.SECRET, {
+                expiresIn: "60 days"
+            });
+            res.cookie('nToken', token, { maxAge: 900000, httpOnly: true });
+            res.redirect('/');
+        } catch (err) {
+            console.log(err.message);
+        }
+    });
+    
 };
+
