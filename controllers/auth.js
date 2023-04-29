@@ -28,7 +28,8 @@ module.exports = (app) => {
     app.get('/logout', async (req, res) => {
         try {
             res.clearCookie('nToken');
-            res.redirect('/');
+            req.flash('successMessage', 'Successfully Logged Out');
+            res.redirect('/?success=true');
         }
         catch (err) {
             console.log(err.message);
@@ -39,33 +40,38 @@ module.exports = (app) => {
     app.get('/login', async (req, res) => {
         try {
             res.render('login');
-        } catch {
+        } catch (err) {
             console.log(err.message);
     }});
 
     // LOGIN
     app.post('/login', async (req, res) => {
         const { username, password } = req.body;
+        const errorMessage = req.flash('Wrong Username or Password');
         try {
             const user = await User.findOne({ username }, 'username password');
             if (!user) {
-                return res.status(401).send({ message: 'Wrong Username or Password' });
+                req.flash('Wrong Username or Password', 'Invalid username or password');
+                return res.status(401).render('login', { errorMessage });
             }
             // Check the password
             const isMatch = await user.comparePassword(password);
             if (!isMatch) {
-                return res.status(401).send({ message: 'Wrong Username or Password' });
+                req.flash('Wrong Username or Password', 'Invalid username or password');
+                return res.status(401).render('login', { errorMessage });
             }
             // Create a token
             const token = jwt.sign({ _id: user._id, username: user.username }, process.env.SECRET, {
                 expiresIn: "60 days"
             });
             res.cookie('nToken', token, { maxAge: 900000, httpOnly: true });
-            res.redirect('/');
+            req.flash('successMessage', `Welcome back ${user.username}!`);
+            res.redirect('/?success=true');
         } catch (err) {
             console.log(err.message);
         }
     });
+    
     
 };
 

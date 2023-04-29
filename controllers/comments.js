@@ -10,7 +10,7 @@ module.exports = (app) => {
         const post = await Post.findById(req.params.postId);
         post.comments.unshift(comment);
         await post.save();
-        return res.redirect(`/`);
+        return res.redirect(`/`, {currentUser: req.user});
     }
     catch (err) {
         console.log(err.message);
