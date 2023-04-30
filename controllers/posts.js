@@ -19,7 +19,7 @@ module.exports = (app) => {
   // NEW
   app.get('/posts/new', async (req, res) => {
     try {
-      return res.render('posts-new', {currentUser: req.user});
+      return res.status(200).render('posts-new', {currentUser: req.user});
     } catch (err) {
       console.log(err.message);
     }
@@ -38,7 +38,7 @@ module.exports = (app) => {
         user.posts.unshift(post);
         await user.save();
         req.flash('success', 'Post created successfully!')
-        return res.redirect(`/posts/${post._id}`);
+        return res.status(200).redirect(`/posts/${post._id}`);
       } else {
         return res.status(401).render('posts-new', { flashMessages: { error: errorMessage} }); // UNAUTHORIZED
       }
