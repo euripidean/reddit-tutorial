@@ -33,17 +33,7 @@ describe('Posts', function () {
       .set('content-type', 'application/x-www-form-urlencoded')
       .send(user)
       .then(function () {
-        agent
-          .post('/login')
-          .set('content-type', 'application/x-www-form-urlencoded')
-          .send(user)
-          .then(function () {
-            done();
-          })
-          .catch(function (err) {
-            done(err);
-          });
-      })
+        done();})
       .catch(function (err) {
         done(err);
       });

@@ -30,7 +30,7 @@ module.exports = (app) => {
         try {
             res.clearCookie('nToken');
             req.flash('success', 'Successfully Logged Out');
-            res.redirect('/?success=true');
+            res.status(200).redirect('/?success=true');
         }
         catch (err) {
             console.log(err.message);
