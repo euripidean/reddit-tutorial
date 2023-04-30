@@ -5,22 +5,29 @@ const User = require('../models/user');
 module.exports = (app) => {
  // CREATE Comment
  app.post("/posts/:postId/comments", async (req, res) => {
-    const errorMessage = req.flash('errorMessage', 'You must be logged in to comment.');
+    const errorMessage = "You must be logged in to comment";
+    const successMessage = "Comment successfully created";
     try {
         if (req.user) {
+            const comment = new Comment(req.body);
+            const post = await Post.findById(req.params.postId);
+            comment.author = req.user._id;
+            comment.post = post._id;
+            await comment.save();
+            
+            post.comments.unshift(comment);
+            await post.save();
 
-        const comment = new Comment(req.body);
-        comment.author = req.user._id;
-        await comment.save();
-        const post = await Post.findById(req.params.postId);
-        post.comments.unshift(comment);
-        await post.save();
-        const user = await User.findById(req.user._id);
-        user.comments.unshift(comment);
-        await user.save();
+            const user = await User.findById(req.user._id);
+            user.comments.unshift(comment);
+
+            await user.save();
+            
+            req.flash('success', successMessage);
         return res.redirect(`/posts/${post._id}`);
         } else {
-            return res.status(401).render(`/posts/${post._id}`, { errorMessage }); // UNAUTHORIZED
+            req.flash('error', errorMessage);
+            return res.status(401).redirect(req.get('referer'));
         }
     }
     catch (err) {

@@ -8,7 +8,7 @@
                 <h5 class="card-title">{{this.title}}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">{{this.url}}</h6>
                 <p class="card-text">{{this.summary}}</p>
-                <a href="/posts/{{this.post._id}}" class="card-link">See Post</a>
+                <a href="/posts/{{this._id}}" class="card-link">See Post</a>
             </div>
         </div>
     {{/each}}
@@ -21,7 +21,9 @@
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <p class="card-text">{{this.content}}</p>
-                    <a href="/posts/{{this.post._id}}" class="card-link">See Post</a>
+                    {{#if this.post}}
+                        <a href="/posts/{{this.post}}" class="card-link">See Post</a>
+                    {{/if}}
                 </div>
             </div>
         {{/each}}

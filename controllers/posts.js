@@ -1,5 +1,4 @@
 const Post = require('../models/post');
-const Comment = require('../models/comment');
 const User = require('../models/user');
 
 module.exports = (app) => {
@@ -28,7 +27,7 @@ module.exports = (app) => {
 
   // CREATE
   app.post('/posts/new', async (req, res) => {
-    const errorMessage = req.flash('errorMessage', 'You must be logged in to create a post.');
+    const errorMessage = "You must be logged in to create a post.";
     try {
       if (req.user) {
         const userId = req.user._id;
@@ -38,9 +37,10 @@ module.exports = (app) => {
         const user = await User.findById(userId);
         user.posts.unshift(post);
         await user.save();
+        req.flash('success', 'Post created successfully!')
         return res.redirect(`/posts/${post._id}`);
       } else {
-        return res.status(401).render('/posts/new', { errorMessage }); // UNAUTHORIZED
+        return res.status(401).render('posts-new', { flashMessages: { error: errorMessage} }); // UNAUTHORIZED
       }
     }
     catch (err) {

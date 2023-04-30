@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
+const { render } = require('../server');
 
 module.exports = (app) => {
 
@@ -28,7 +29,7 @@ module.exports = (app) => {
     app.get('/logout', async (req, res) => {
         try {
             res.clearCookie('nToken');
-            req.flash('successMessage', 'Successfully Logged Out');
+            req.flash('success', 'Successfully Logged Out');
             res.redirect('/?success=true');
         }
         catch (err) {
@@ -47,42 +48,44 @@ module.exports = (app) => {
     // LOGIN
     app.post('/login', async (req, res) => {
         const { username, password } = req.body;
-        const errorMessage = req.flash('Wrong Username or Password');
+        const errorMessage = 'Invalid username or password';
         try {
             const user = await User.findOne({ username }, 'username password');
             if (!user) {
-                req.flash('Wrong Username or Password', 'Invalid username or password');
-                return res.status(401).render('login', { errorMessage });
+                res.render('login', { flashMessages: { error: errorMessage }});  
             }
             // Check the password
             const isMatch = await user.comparePassword(password);
             if (!isMatch) {
-                req.flash('Wrong Username or Password', 'Invalid username or password');
-                return res.status(401).render('login', { errorMessage });
+                res.render('login', { flashMessages: { error: errorMessage }});
             }
             // Create a token
             const token = jwt.sign({ _id: user._id, username: user.username }, process.env.SECRET, {
                 expiresIn: "60 days"
             });
             res.cookie('nToken', token, { maxAge: 900000, httpOnly: true });
-            req.flash('successMessage', `Welcome back ${user.username}!`);
+            req.flash('success', `Welcome back ${user.username}!`);
             res.redirect('/?success=true');
         } catch (err) {
             console.log(err.message);
         }
-    });
+    }
+    );
 
     // SHOW USER
     app.get('/users/:username', async (req, res) => {
         try {
             const user = await User.findOne({ username: req.params.username }).lean().populate('posts').populate('comments');
-            res.render('users-show', { user });
+            res.render('profile', { user });
         }
         catch (err) {
             console.log(err.message);
         }
     });
+
+
     
     
 };
+
 

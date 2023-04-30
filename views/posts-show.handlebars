@@ -1,17 +1,43 @@
 <div class="row">
-  <div class="col-sm-6 col-sm-offset-3">
-    <a href="{{post.url}}" class="lead">{{post.title}}</a>
+  <div class="col-sm-8 offset-sm-2 text-center">
+    <div class="card" style="background-color:#f5f5f5; margin-top:20px;">
+    <a href="/posts/{{post.id}}" class="lead">{{post.title}}</a>
+    <a href="{{post.url}}">{{post.url}}</a>
     <p>{{post.summary}}</p>
     <small>Submitted by <a href="/users/{{post.author.username}}">{{post.author.username}}</a></small>
-    <form action="/posts/{{post._id}}/comments" method="post">
+    <small>Created: {{dateFormat post.createdAt "MMM DD, YYYY"}}</small>
+    <a href="/n/{{post.subreddit}}">{{post.subreddit}}</a>
+
+    {{#if user}}
+      {{#if (eq user._id post.author._id)}}
+        <a href="/posts/{{post._id}}/edit" class="btn btn-primary">Edit</a>
+        <form action="/posts/{{post._id}}?_method=DELETE" method="post" style="display:inline;">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      {{/if}}
+    {{/if}}
+    </div>
+    <form action="/posts/{{post._id}}/comments" method="post" style="border:solid gray 1px; border-radius:8px; padding:20px; margin:10px;">
       <textarea class='form-control' name="content" placeholder="Comment"></textarea>
       <div class="text-right">
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary" style="margin-top:10px;">Save</button>
       </div>
     </form>
+    <h3>Comments</h3>
+    {{#if post.comments}}
     {{#each post.comments}}
-      <p>{{this.content}}</p>
-      <small>Submitted by <a href="/users/{{this.author.username}}">{{this.author.username}}</a></small>
+    {{!-- Display as a bootstrap card containing the content and author of the comments --}}
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <p class="card-text">{{this.content}}</p>
+        <small>Submitted by <a href="/users/{{this.author.username}}">{{this.author.username}}</a></small><br/>
+        {{!-- Put the date created here --}}
+        <small>Created: {{dateFormat this.createdAt "MMM DD, YYYY"}}</small>
+      </div>
+    </div>
     {{/each}}
+    {{else}}
+      <p>No comments yet.</p>
+    {{/if}}
   </div>
 </div>

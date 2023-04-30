@@ -1,0 +1,12 @@
+{{!-- Dynamically show flash messages as bootstrap alerts --}}
+{{#if flashMessages.success }}
+    <div class="alert alert-success alert fade show" role="alert">
+        {{ flashMessages.success }}
+    </div>
+{{/if}}
+{{#if flashMessages.error }}
+    <div class="alert alert-danger alert fade show" role="alert">
+        {{ flashMessages.error }}
+    </div>
+{{/if}}
+
