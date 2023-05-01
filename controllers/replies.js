@@ -24,6 +24,9 @@ module.exports = (app) => {
   // CREATE REPLY
 app.post('/posts/:postId/comments/:commentId/replies', (req, res) => {
     // TURN REPLY INTO A COMMENT OBJECT
+    const errorMessage = "You must be logged in to reply to a comment."
+    const successMessage = "Reply successfully posted."
+    if (req.user) {
     const reply = new Comment(req.body);
     reply.author = req.user._id;
     // LOOKUP THE PARENT POST
@@ -39,12 +42,16 @@ app.post('/posts/:postId/comments/:commentId/replies', (req, res) => {
             comment.comments.unshift(reply._id);
             return Promise.all([
               comment.save(),
+              req.flash('success', successMessage)
             ]);
           })
-          .then(() => res.redirect(`/posts/${req.params.postId}`))
+          .then(() => res.status(200).redirect(`/posts/${req.params.postId}`))
           .catch(console.error);
         // SAVE THE CHANGE TO THE PARENT DOCUMENT
         return post.save();
       });
-  });
+  } else {
+    return res.status(401).render(`/posts/${req.params.postId}`, { flashMessages: { error: errorMessage }}); // UNAUTHORIZED
+  }
+});
 };

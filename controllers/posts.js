@@ -30,13 +30,12 @@ module.exports = (app) => {
     const errorMessage = "You must be logged in to create a post.";
     try {
       if (req.user) {
-        const userId = req.user._id;
         const post = new Post(req.body);
-        post.author = userId;
+        post.author = req.user._id;
+        post.upVotes = [];
+        post.downVotes = [];
+        post.voteScore = 0;
         await post.save();
-        const user = await User.findById(userId);
-        user.posts.unshift(post);
-        await user.save();
         req.flash('success', 'Post created successfully!')
         return res.status(200).redirect(`/posts/${post._id}`);
       } else {
@@ -66,6 +65,46 @@ module.exports = (app) => {
       .catch((err) => {
         console.log(err);
       });
+  });
+
+  // VOTE UP
+    app.put('/posts/:id/vote-up', async (req, res) => {
+      const successMessage = "Vote successful!"
+      const errorMessage = "You must be logged in to vote.";
+      if (req.user) {
+        try {
+          const post = await Post.findById(req.params.id);
+          post.upVotes.push(req.user._id);
+          post.voteScore += 1;
+          await post.save();
+          req.flash('success', successMessage);
+          return res.status(200);
+        } catch (err) {
+          console.log(err.message);
+        }
+      } else {
+        return res.status(401).render(`/posts/${post._id}`, { flashMessages: { error: errorMessage} }); // UNAUTHORIZED
+      }
+    });
+  
+  // VOTE DOWN
+  app.put('/posts/:id/vote-down', async (req, res) => {
+    const successMessage = "Vote successful!"
+    const errorMessage = "You must be logged in to vote.";
+    if (req.user) {
+      try {
+        const post = await Post.findById(req.params.id);
+        post.downVotes.push(req.user._id);
+        post.voteScore -= 1;
+        await post.save();
+        req.flash('success', successMessage);
+        return res.status(200);
+      } catch (err) {
+        console.log(err.message);
+      }
+    } else {
+      return res.status(401).render(`/posts/${post._id}`, { flashMessages: { error: errorMessage} }); // UNAUTHORIZED
+    }
   });
 };
 
