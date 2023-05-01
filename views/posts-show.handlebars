@@ -26,16 +26,8 @@
     <h3>Comments</h3>
     {{#if post.comments}}
     {{#each post.comments}}
-    {{!-- Display as a bootstrap card containing the content and author of the comments --}}
-    <div class="card" style="width: 18rem;">
-      <div class="card-body">
-        <p class="card-text">{{this.content}}</p>
-        <small>Submitted by <a href="/users/{{this.author.username}}">{{this.author.username}}</a></small><br/>
-        {{!-- Put the date created here --}}
-        <small>Created: {{dateFormat this.createdAt "MMM DD, YYYY"}}</small>
-      </div>
-    </div>
-    {{/each}}
+  {{> comment comment=this postId=../post._id}}
+  {{/each}}
     {{else}}
       <p>No comments yet.</p>
     {{/if}}

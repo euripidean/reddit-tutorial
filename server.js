@@ -51,6 +51,7 @@ app.use((req, res, next) => {
 require('./controllers/posts')(app);
 require('./controllers/comments.js')(app);
 require('./controllers/auth.js')(app);
+require('./controllers/replies.js')(app);
 
 
 app.listen(3000, () => {
